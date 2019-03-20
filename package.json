@@ -1,15 +1,16 @@
 {
-  "name": "xml-crypto",
+  "name": "web-xml-crypto",
   "version": "1.2.0",
-  "description": "Xml digital signature and encryption library for Node.js",
+  "description": "Xml digital signature and encryption library for web js. Based on the https://github.com/yaronn/xml-crypto (Yaron Naveh <yaronn01@gmail.com> (http://webservices20.blogspot.com/))",
   "engines": {
     "node": ">=0.4.0"
   },
-  "author": "Yaron Naveh <yaronn01@gmail.com> (http://webservices20.blogspot.com/)",
+  "author": "Rexscaria (arun.rex.scaria@gmail.com) AND Yaron Naveh <yaronn01@gmail.com> (http://webservices20.blogspot.com/)",
   "contributors": [
     "LoneRifle <LoneRifle@users.noreply.github.com>"
   ],
   "dependencies": {
+    "crypto": "^1.0.1",
     "xmldom": "0.1.27",
     "xpath": "0.0.27"
   },
@@ -18,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yaronn/xml-crypto.git"
+    "url": "https://github.com/scaria/web-xml-crypto"
   },
   "main": "./index.js",
   "directories": {
@@ -28,7 +29,8 @@
     "xml",
     "digital signature",
     "xml encryption",
-    "x.509 certificate"
+    "x.509 certificate",
+    "web xml"
   ],
   "license": "MIT",
   "scripts": {

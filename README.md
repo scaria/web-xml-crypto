@@ -129,7 +129,7 @@ Example:
 
 	var signature = select(doc, "/*/*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']")[0]
 	var sig = new SignedXml()
-	sig.keyInfoProvider = new FileKeyInfo("client_public.pem")
+	sig.keyInfoProvider = new FileKeyInfo(fs.readFileSync("client_public.pem"))
 	sig.loadSignature(signature)
 	var res = sig.checkSignature(xml)
 	if (!res) console.log(sig.validationErrors)	
@@ -163,7 +163,7 @@ If you keep failing verification, it is worth trying to guess such a hidden tran
 ```javascript
 var option = {implicitTransforms: ["http://www.w3.org/TR/2001/REC-xml-c14n-20010315"]}
 var sig = new SignedXml(null, option)
-sig.keyInfoProvider = new FileKeyInfo("client_public.pem")
+sig.keyInfoProvider = new FileKeyInfo(fs.readFileSync("client_public.pem"))
 sig.loadSignature(signature)
 var res = sig.checkSignature(xml)
 ```
@@ -219,7 +219,7 @@ To verify xml documents:
 
 ### FileKeyInfo
 
-A basic key info provider implementation using `fs.readFileSync(file)`, is constructed using `new FileKeyInfo([file])` where:
+A basic key info provider implementation using `fs.readFileSync(file)`, is constructed using `new FileKeyInfo([fileContents])` where:
 
 - `file` - a path to a pem encoded certificate
 
