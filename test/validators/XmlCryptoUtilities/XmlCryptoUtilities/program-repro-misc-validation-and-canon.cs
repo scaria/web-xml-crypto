@@ -51,7 +51,7 @@ public class SignVerifyEnvelope
     }
 
 
-    static bool ValidateXml(XmlDocument receipt, X509Certificate2 certificate)
+    static async bool ValidateXml(XmlDocument receipt, X509Certificate2 certificate)
     {
         // Create the signed XML object.
         SignedXml sxml = new SignedXml(receipt);
@@ -68,7 +68,7 @@ public class SignVerifyEnvelope
         sxml.LoadXml((XmlElement)dsig);
         
         // Check the signature
-        bool isValid = sxml.CheckSignature(certificate, true);
+        bool isValid = await sxml.CheckSignature(certificate, true);
 
 
         FieldInfo field = sxml.GetType().GetField("m_signature",
@@ -169,7 +169,7 @@ public class SignVerifyEnvelope
         xmlDoc.Load(@"c:\temp\x.xml");
         XmlNode node = xmlDoc.DocumentElement;
         X509Certificate2 cert = new X509Certificate2(File.ReadAllBytes(@"c:\temp\x.cer"));
-        bool isValid = ValidateXml(xmlDoc, cert);        
+        bool isValid = ValidateXml(xmlDoc, cert).Wait();        
         //return;
         
 
@@ -182,7 +182,7 @@ public class SignVerifyEnvelope
     // Sign an XML file and save the signature in a new file. This method does not  
     // save the public key within the XML file.  This file cannot be verified unless  
     // the verifying code has the key with which it was signed.
-    public static void SignXmlFile(string FileName, string SignedFileName, RSA Key)
+    public static async void SignXmlFile(string FileName, string SignedFileName, RSA Key)
     {
         // Create a new XML document.
         XmlDocument doc = new XmlDocument();
@@ -208,7 +208,7 @@ public class SignVerifyEnvelope
         signedXml.AddReference(reference);
 
         // Compute the signature.
-        signedXml.ComputeSignature();
+        await signedXml.ComputeSignature();
 
         // Get the XML representation of the signature and save
         // it to an XmlElement object.
@@ -231,7 +231,7 @@ public class SignVerifyEnvelope
 
     // Verify the signature of an XML file against an asymetric 
     // algorithm and return the result.
-    public static Boolean VerifyXmlFile(String Name, RSA Key)
+    public static async Boolean VerifyXmlFile(String Name, RSA Key)
     {
         // Create a new XML document.
         XmlDocument xmlDocument = new XmlDocument();
@@ -251,7 +251,7 @@ public class SignVerifyEnvelope
         signedXml.LoadXml((XmlElement)nodeList[0]);
 
         // Check the signature and return the result.
-        return signedXml.CheckSignature(Key);
+        return await signedXml.CheckSignature(Key);
     }
 
 

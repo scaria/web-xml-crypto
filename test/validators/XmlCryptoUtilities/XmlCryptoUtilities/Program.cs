@@ -26,7 +26,7 @@ public class SignVerifyEnvelope
         {
             Console.WriteLine("verifying signature...");
             var file = Path.Combine(folder, "SignedExample.xml");
-            bool b = VerifyXmlFile(file, (RSA)c.PublicKey.Key);
+            bool b = VerifyXmlFile(file, (RSA)c.PublicKey.Key).Wait();
             Console.WriteLine("signature is " + (b ? "valid" : "not valid!"));
             if (!b) Environment.Exit(-1);
         }
@@ -36,7 +36,7 @@ public class SignVerifyEnvelope
             var xmlFile = Path.Combine(folder, "Example.xml");
             var sigFile = Path.Combine(folder, "signedExample.xml");
             CreateSomeXml(xmlFile);
-            SignXmlFile(xmlFile, sigFile, (RSA)c.PrivateKey);
+            SignXmlFile(xmlFile, sigFile, (RSA)c.PrivateKey).Wait();
             Console.WriteLine("done");
         }
     }
@@ -44,7 +44,7 @@ public class SignVerifyEnvelope
     // Sign an XML file and save the signature in a new file. This method does not  
     // save the public key within the XML file.  This file cannot be verified unless  
     // the verifying code has the key with which it was signed.
-    public static void SignXmlFile(string FileName, string SignedFileName, RSA Key)
+    public static async Task SignXmlFile(string FileName, string SignedFileName, RSA Key)
     {
         // Create a new XML document.
         XmlDocument doc = new XmlDocument();
@@ -70,7 +70,7 @@ public class SignVerifyEnvelope
         signedXml.AddReference(reference);
 
         // Compute the signature.
-        signedXml.ComputeSignature();
+        await signedXml.ComputeSignature();
 
         // Get the XML representation of the signature and save
         // it to an XmlElement object.
@@ -93,7 +93,7 @@ public class SignVerifyEnvelope
 
     // Verify the signature of an XML file against an asymetric 
     // algorithm and return the result.
-    public static Boolean VerifyXmlFile(String Name, RSA Key)
+    public static async Boolean VerifyXmlFile(String Name, RSA Key)
     {
         // Create a new XML document.
         XmlDocument xmlDocument = new XmlDocument();
@@ -113,7 +113,7 @@ public class SignVerifyEnvelope
         signedXml.LoadXml((XmlElement)nodeList[0]);
 
         // Check the signature and return the result.
-        return signedXml.CheckSignature(Key);
+        return await signedXml.CheckSignature(Key);
     }
 
 

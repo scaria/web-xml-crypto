@@ -3,7 +3,7 @@ var xpath = require("xpath");
 var xmldom = require("xmldom");
 var fs = require("fs");
 
-exports["test validating WS-Fed Metadata"] = function(test) {
+exports["test validating WS-Fed Metadata"] = async function(test) {
   var xml = fs.readFileSync("./test/static/wsfederation_metadata.xml", "utf-8");
   var doc = new xmldom.DOMParser().parseFromString(xml);
   var signature = xpath.select(
@@ -15,7 +15,7 @@ exports["test validating WS-Fed Metadata"] = function(test) {
     fs.readFileSync("./test/static/wsfederation_metadata.pem")
   );
   sig.loadSignature(signature);
-  var result = sig.checkSignature(xml);
+  var result = await sig.checkSignature(xml);
   test.equal(result, true);
   test.done();
 };

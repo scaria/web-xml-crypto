@@ -3,7 +3,7 @@ var xpath = require("xpath");
 var xmldom = require("xmldom");
 var fs = require("fs");
 
-exports["test with a document "] = function(test) {
+exports["test with a document "] = async function(test) {
   var xml = fs.readFileSync("./test/static/valid_saml.xml", "utf-8");
   var doc = new xmldom.DOMParser().parseFromString(xml);
   var signature = new xmldom.DOMParser().parseFromString(
@@ -19,7 +19,7 @@ exports["test with a document "] = function(test) {
     fs.readFileSync("./test/static/feide_public.pem")
   );
   sig.loadSignature(signature);
-  var result = sig.checkSignature(xml);
+  var result = await sig.checkSignature(xml);
   test.equal(result, true);
   test.done();
 };

@@ -3,7 +3,7 @@ var xpath = require("xpath");
 var xmldom = require("xmldom");
 var fs = require("fs");
 
-exports["test validating SAML response"] = function(test) {
+exports["test validating SAML response"] = async function(test) {
   var xml = fs.readFileSync("./test/static/valid_saml.xml", "utf-8");
   var doc = new xmldom.DOMParser().parseFromString(xml);
   var signature = xpath.select(
@@ -15,7 +15,7 @@ exports["test validating SAML response"] = function(test) {
     fs.readFileSync("./test/static/feide_public.pem")
   );
   sig.loadSignature(signature);
-  var result = sig.checkSignature(xml);
+  var result = await sig.checkSignature(xml);
   test.equal(result, true);
   test.done();
 };
@@ -37,8 +37,8 @@ exports["test validating wrapped assertion signature"] = function(test) {
   );
   sig.loadSignature(signature);
   test.throws(
-    function() {
-      sig.checkSignature(xml);
+    async function() {
+      await sig.checkSignature(xml);
     },
     Error,
     "Should not validate a document which contains multiple elements with the " +
@@ -50,7 +50,7 @@ exports["test validating wrapped assertion signature"] = function(test) {
 
 exports[
   "test validating SAML response where a namespace is defined outside the signed element"
-] = function(test) {
+] = async function(test) {
   var xml = fs.readFileSync("./test/static/saml_external_ns.xml", "utf-8");
   var doc = new xmldom.DOMParser().parseFromString(xml);
   var signature = xpath.select(
@@ -62,7 +62,7 @@ exports[
     fs.readFileSync("./test/static/saml_external_ns.pem")
   );
   sig.loadSignature(signature);
-  var result = sig.checkSignature(xml);
+  var result = await sig.checkSignature(xml);
   test.equal(result, true);
   test.done();
 };
@@ -81,8 +81,8 @@ exports["test reference id does not contain quotes"] = function(test) {
   );
   sig.loadSignature(signature);
   test.throws(
-    function() {
-      sig.checkSignature(xml);
+    async function() {
+      await sig.checkSignature(xml);
     },
     Error,
     "id should not contain quotes"
@@ -90,7 +90,7 @@ exports["test reference id does not contain quotes"] = function(test) {
   test.done();
 };
 
-exports["test validating SAML response WithComments"] = function(test) {
+exports["test validating SAML response WithComments"] = async function(test) {
   var xml = fs.readFileSync(
     "./test/static/valid_saml_withcomments.xml",
     "utf-8"
@@ -105,7 +105,7 @@ exports["test validating SAML response WithComments"] = function(test) {
     fs.readFileSync("./test/static/feide_public.pem")
   );
   sig.loadSignature(signature);
-  var result = sig.checkSignature(xml);
+  var result = await sig.checkSignature(xml);
   // This doesn't matter, just want to make sure that we don't fail due to unknown algorithm
   test.equal(result, false);
   test.done();
