@@ -73,6 +73,7 @@ module.exports = {
     sig.loadSignature(signature);
     var result = await sig.checkSignature(xml);
     test.equal(result, true);
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
 
@@ -104,6 +105,7 @@ module.exports = {
     sig.loadSignature(signature);
     var result = await sig.checkSignature(xml);
     test.equal(result, true);
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
 
@@ -126,6 +128,7 @@ module.exports = {
     sig.loadSignature(signature);
     var result = await sig.checkSignature(xml);
     test.equal(result, true);
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
 
@@ -150,6 +153,7 @@ module.exports = {
     sig.loadSignature(signature);
     var result = await sig.checkSignature(xml);
     test.equal(result, true);
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
 
@@ -174,6 +178,7 @@ module.exports = {
     sig.loadSignature(signature);
     var result = await sig.checkSignature(xml);
     test.equal(result, true);
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
 
@@ -228,6 +233,7 @@ module.exports = {
       "<library> should have two child nodes : <book> and <Signature>"
     );
 
+    console.log("-------Test Complete----------\n\n");
     test.done();
   }
 };
@@ -247,6 +253,7 @@ async function verifySignature(test, xml, expected, xpath) {
   //fs.writeFileSync("./test/validators/XmlCryptoUtilities/XmlCryptoUtilities/bin/Debug/signedExample.xml", signed)
   var expectedContent = fs.readFileSync(expected).toString();
   test.equal(signed, expectedContent, "signature xml different than expected");
+  console.log("-------Test Complete----------\n\n");
   test.done();
   /*
   var spawn = require('child_process').spawn

@@ -20,7 +20,7 @@ exports["test validating SAML response"] = async function(test) {
   test.done();
 };
 
-exports["test validating wrapped assertion signature"] = function(test) {
+exports["test validating wrapped assertion signature"] = async function(test) {
   var xml = fs.readFileSync(
     "./test/static/valid_saml_signature_wrapping.xml",
     "utf-8"
@@ -36,14 +36,20 @@ exports["test validating wrapped assertion signature"] = function(test) {
     fs.readFileSync("./test/static/feide_public.pem")
   );
   sig.loadSignature(signature);
-  test.throws(
-    async function() {
-      await sig.checkSignature(xml);
-    },
-    Error,
-    "Should not validate a document which contains multiple elements with the " +
-      "same value for the ID / Id / Id attributes, in order to prevent " +
-      "signature wrapping attack."
+
+  let threw = false,
+    error = "";
+  try {
+    await sig.checkSignature(xml);
+  } catch (e) {
+    threw = true;
+    error = e.message;
+  }
+
+  test.equal(threw, true);
+  test.equal(
+    error,
+    "Cannot validate a document which contains multiple elements with the same value for the ID / Id / Id attributes, in order to prevent signature wrapping attack."
   );
   test.done();
 };
@@ -67,7 +73,7 @@ exports[
   test.done();
 };
 
-exports["test reference id does not contain quotes"] = function(test) {
+exports["test reference id does not contain quotes"] = async function(test) {
   var xml = fs.readFileSync("./test/static/id_with_quotes.xml", "utf-8");
   var doc = new xmldom.DOMParser().parseFromString(xml);
   var assertion = xpath.select("//*[local-name(.)='Assertion']", doc)[0];
@@ -80,13 +86,18 @@ exports["test reference id does not contain quotes"] = function(test) {
     fs.readFileSync("./test/static/feide_public.pem")
   );
   sig.loadSignature(signature);
-  test.throws(
-    async function() {
-      await sig.checkSignature(xml);
-    },
-    Error,
-    "id should not contain quotes"
-  );
+
+  let threw = false,
+    error = "";
+  try {
+    await sig.checkSignature(xml);
+  } catch (e) {
+    threw = true;
+    error = e.message;
+  }
+
+  test.equal(threw, true);
+  test.equal(error, "Cannot validate a uri with quotes inside it");
   test.done();
 };
 

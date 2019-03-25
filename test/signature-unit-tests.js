@@ -5,200 +5,180 @@ var select = require("xpath").select,
   fs = require("fs");
 
 module.exports = {
-  "signer adds increasing id atributes to elements": function(test) {
-    verifyAddsId(test, "wssecurity", "equal");
-    verifyAddsId(test, null, "different");
+  "signer adds increasing id atributes to elements": async function(test) {
+    test.expect();
+    await verifyAddsId(test, "wssecurity", "equal");
+    await verifyAddsId(test, null, "different");
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "signer does not duplicate existing id attributes": async function(test) {
+    test.expect();
     await verifyDoesNotDuplicateIdAttributes(test, null, "");
     await verifyDoesNotDuplicateIdAttributes(test, "wssecurity", "wsu:");
-
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
 
   "signer adds custom attributes to the signature root node": async function(
     test
   ) {
+    test.expect();
     await verifyAddsAttrs(test);
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "signer appends signature to the root node by default": async function(test) {
+    test.expect();
     var xml =
       "<root><name>xml-crypto</name><repository>github</repository></root>";
     var sig = new SignedXml();
-
     sig.signingKey = fs.readFileSync("./test/static/client.pem");
     sig.addReference("//*[local-name(.)='name']");
     await sig.computeSignature(xml);
-
     var doc = new dom().parseFromString(sig.getSignedXml());
-
     test.strictEqual(
       doc.documentElement.lastChild.localName,
       "Signature",
       "the signature must be appended to the root node by default"
     );
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "signer appends signature to a reference node": async function(test) {
+    test.expect();
     var xml =
       "<root><name>xml-crypto</name><repository>github</repository></root>";
     var sig = new SignedXml();
-
     sig.signingKey = fs.readFileSync("./test/static/client.pem");
     sig.addReference("//*[local-name(.)='repository']");
-
     await sig.computeSignature(xml, {
       location: {
         reference: "/root/name",
         action: "append"
       }
     });
-
     var doc = new dom().parseFromString(sig.getSignedXml());
     var referenceNode = select("/root/name", doc)[0];
-
     test.strictEqual(
       referenceNode.lastChild.localName,
       "Signature",
       "the signature should be appended to root/name"
     );
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "signer prepends signature to a reference node": async function(test) {
+    test.expect();
     var xml =
       "<root><name>xml-crypto</name><repository>github</repository></root>";
     var sig = new SignedXml();
-
     sig.signingKey = fs.readFileSync("./test/static/client.pem");
     sig.addReference("//*[local-name(.)='repository']");
-
     await sig.computeSignature(xml, {
       location: {
         reference: "/root/name",
         action: "prepend"
       }
     });
-
     var doc = new dom().parseFromString(sig.getSignedXml());
     var referenceNode = select("/root/name", doc)[0];
-
     test.strictEqual(
       referenceNode.firstChild.localName,
       "Signature",
       "the signature should be prepended to root/name"
     );
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "signer inserts signature before a reference node": async function(test) {
+    test.expect();
     var xml =
       "<root><name>xml-crypto</name><repository>github</repository></root>";
     var sig = new SignedXml();
-
     sig.signingKey = fs.readFileSync("./test/static/client.pem");
     sig.addReference("//*[local-name(.)='repository']");
-
     await sig.computeSignature(xml, {
       location: {
         reference: "/root/name",
         action: "before"
       }
     });
-
     var doc = new dom().parseFromString(sig.getSignedXml());
     var referenceNode = select("/root/name", doc)[0];
-
     test.strictEqual(
       referenceNode.previousSibling.localName,
       "Signature",
       "the signature should be inserted before to root/name"
     );
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "signer inserts signature after a reference node": async function(test) {
+    test.expect();
     var xml =
       "<root><name>xml-crypto</name><repository>github</repository></root>";
     var sig = new SignedXml();
-
     sig.signingKey = fs.readFileSync("./test/static/client.pem");
     sig.addReference("//*[local-name(.)='repository']");
-
     await sig.computeSignature(xml, {
       location: {
         reference: "/root/name",
         action: "after"
       }
     });
-
     var doc = new dom().parseFromString(sig.getSignedXml());
     var referenceNode = select("/root/name", doc)[0];
-
     test.strictEqual(
       referenceNode.nextSibling.localName,
       "Signature",
       "the signature should be inserted after to root/name"
     );
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "signer creates signature with correct structure": async function(test) {
+    test.expect();
     function DummyKeyInfo() {
       this.getKeyInfo = function(key) {
         return "dummy key info";
       };
     }
-
     function DummyDigest() {
       this.getHash = function(xml) {
         return "dummy digest";
       };
-
       this.getAlgorithmName = function() {
         return "dummy digest algorithm";
       };
     }
-
     function DummySignatureAlgorithm() {
       this.getSignature = function(xml, signingKey) {
         return "dummy signature";
       };
-
       this.getAlgorithmName = function() {
         return "dummy algorithm";
       };
     }
-
     function DummyTransformation() {
       this.process = function(node) {
         return "< x/>";
       };
-
       this.getAlgorithmName = function() {
         return "dummy transformation";
       };
     }
-
     function DummyCanonicalization() {
       this.process = function(node) {
         return "< x/>";
       };
-
       this.getAlgorithmName = function() {
         return "dummy canonicalization";
       };
     }
-
     var xml =
       '<root><x xmlns="ns"></x><y attr="value"></y><z><w></w></z></root>';
     var sig = new SignedXml();
-
     SignedXml.CanonicalizationAlgorithms[
       "http://DummyTransformation"
     ] = DummyTransformation;
@@ -209,11 +189,9 @@ module.exports = {
     SignedXml.SignatureAlgorithms[
       "http://dummySignatureAlgorithm"
     ] = DummySignatureAlgorithm;
-
     sig.signatureAlgorithm = "http://dummySignatureAlgorithm";
     sig.keyInfoProvider = new DummyKeyInfo();
     sig.canonicalizationAlgorithm = "http://DummyCanonicalization";
-
     sig.addReference(
       "//*[local-name(.)='x']",
       ["http://DummyTransformation"],
@@ -229,7 +207,6 @@ module.exports = {
       ["http://DummyTransformation"],
       "http://dummyDigest"
     );
-
     await sig.computeSignature(xml);
     var signature = sig.getSignatureXml();
     var expected =
@@ -264,9 +241,7 @@ module.exports = {
       "dummy key info" +
       "</KeyInfo>" +
       "</Signature>";
-
     test.equal(expected, signature, "wrong signature format");
-
     var signedXml = sig.getSignedXml();
     var expectedSignedXml =
       '<root><x xmlns="ns" Id="_0"/><y attr="value" Id="_1"/><z><w Id="_2"/></z>' +
@@ -302,9 +277,7 @@ module.exports = {
       "</KeyInfo>" +
       "</Signature>" +
       "</root>";
-
     test.equal(expectedSignedXml, signedXml, "wrong signedXml format");
-
     var originalXmlWithIds = sig.getOriginalXmlWithIds();
     var expectedOriginalXmlWithIds =
       '<root><x xmlns="ns" Id="_0"/><y attr="value" Id="_1"/><z><w Id="_2"/></z></root>';
@@ -313,65 +286,54 @@ module.exports = {
       originalXmlWithIds,
       "wrong OriginalXmlWithIds"
     );
-
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "signer creates signature with correct structure (with prefix)": async function(
     test
   ) {
+    test.expect();
     var prefix = "ds";
-
     function DummyKeyInfo() {
       this.getKeyInfo = function(key) {
         return "<ds:dummy>dummy key info</ds:dummy>";
       };
     }
-
     function DummyDigest() {
       this.getHash = function(xml) {
         return "dummy digest";
       };
-
       this.getAlgorithmName = function() {
         return "dummy digest algorithm";
       };
     }
-
     function DummySignatureAlgorithm() {
       this.getSignature = function(xml, signingKey) {
         return "dummy signature";
       };
-
       this.getAlgorithmName = function() {
         return "dummy algorithm";
       };
     }
-
     function DummyTransformation() {
       this.process = function(node) {
         return "< x/>";
       };
-
       this.getAlgorithmName = function() {
         return "dummy transformation";
       };
     }
-
     function DummyCanonicalization() {
       this.process = function(node) {
         return "< x/>";
       };
-
       this.getAlgorithmName = function() {
         return "dummy canonicalization";
       };
     }
-
     var xml =
       '<root><x xmlns="ns"></x><y attr="value"></y><z><w></w></z></root>';
     var sig = new SignedXml();
-
     SignedXml.CanonicalizationAlgorithms[
       "http://DummyTransformation"
     ] = DummyTransformation;
@@ -382,11 +344,9 @@ module.exports = {
     SignedXml.SignatureAlgorithms[
       "http://dummySignatureAlgorithm"
     ] = DummySignatureAlgorithm;
-
     sig.signatureAlgorithm = "http://dummySignatureAlgorithm";
     sig.keyInfoProvider = new DummyKeyInfo();
     sig.canonicalizationAlgorithm = "http://DummyCanonicalization";
-
     sig.addReference(
       "//*[local-name(.)='x']",
       ["http://DummyTransformation"],
@@ -402,10 +362,8 @@ module.exports = {
       ["http://DummyTransformation"],
       "http://dummyDigest"
     );
-
     await sig.computeSignature(xml, { prefix: prefix });
     var signature = sig.getSignatureXml();
-
     var expected =
       '<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">' +
       "<ds:SignedInfo>" +
@@ -438,9 +396,7 @@ module.exports = {
       "<ds:dummy>dummy key info</ds:dummy>" +
       "</ds:KeyInfo>" +
       "</ds:Signature>";
-
     test.equal(expected, signature, "wrong signature format");
-
     var signedXml = sig.getSignedXml();
     var expectedSignedXml =
       '<root><x xmlns="ns" Id="_0"/><y attr="value" Id="_1"/><z><w Id="_2"/></z>' +
@@ -476,9 +432,7 @@ module.exports = {
       "</ds:KeyInfo>" +
       "</ds:Signature>" +
       "</root>";
-
     test.equal(expectedSignedXml, signedXml, "wrong signedXml format");
-
     var originalXmlWithIds = sig.getOriginalXmlWithIds();
     var expectedOriginalXmlWithIds =
       '<root><x xmlns="ns" Id="_0"/><y attr="value" Id="_1"/><z><w Id="_2"/></z></root>';
@@ -487,21 +441,19 @@ module.exports = {
       originalXmlWithIds,
       "wrong OriginalXmlWithIds"
     );
-
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "signer creates correct signature values": async function(test) {
+    test.expect();
     var xml =
       '<root><x xmlns="ns" Id="_0"></x><y attr="value" Id="_1"></y><z><w Id="_2"></w></z></root>';
     var sig = new SignedXml();
     sig.signingKey = fs.readFileSync("./test/static/client.pem");
     sig.keyInfoProvider = null;
-
     sig.addReference("//*[local-name(.)='x']");
     sig.addReference("//*[local-name(.)='y']");
     sig.addReference("//*[local-name(.)='w']");
-
     await sig.computeSignature(xml);
     var signedXml = sig.getSignedXml();
     var expected =
@@ -534,23 +486,23 @@ module.exports = {
       "<SignatureValue>NejzGB9MDUddKCt3GL2vJhEd5q6NBuhLdQc3W4bJI5q34hk7Hk6zBRoW3OliX+/f7Hpi9y0INYoqMSUfrsAVm3IuPzUETKlI6xiNZo07ULRj1DwxRo6cU66ar1EKUQLRuCZas795FjB8jvUI2lyhcax/00uMJ+Cjf4bwAQ+9gOQ=</SignatureValue>" +
       "</Signature>" +
       "</root>";
-
     test.equal(expected, signedXml, "wrong signature format");
-
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "correctly loads signature": function(test) {
+    test.expect();
     passLoadSignature(test, "./test/static/valid_signature.xml");
     passLoadSignature(test, "./test/static/valid_signature.xml", true);
     passLoadSignature(
       test,
       "./test/static/valid_signature_with_root_level_sig_namespace.xml"
     );
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "verify valid signature": async function(test) {
+    test.expect();
     await passValidSignature(test, "./test/static/valid_signature.xml");
     await passValidSignature(
       test,
@@ -570,10 +522,11 @@ module.exports = {
       "./test/static/valid_signature_with_whitespace_in_digestvalue.xml"
     );
     await passValidSignature(test, "./test/static/valid_signature_utf8.xml");
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "fail invalid signature": async function(test) {
+    test.expect();
     await failInvalidSignature(
       test,
       "./test/static/invalid_signature - signature value.xml"
@@ -610,16 +563,15 @@ module.exports = {
       "./test/static/invalid_signature - wsu - changed content.xml",
       "wssecurity"
     );
-
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "allow empty reference uri when signing": async function(test) {
+    test.expect();
     var xml = "<root><x /></root>";
     var sig = new SignedXml();
     sig.signingKey = fs.readFileSync("./test/static/client.pem");
     sig.keyInfoProvider = null;
-
     sig.addReference(
       "//*[local-name(.)='root']",
       ["http://www.w3.org/2000/09/xmldsig#enveloped-signature"],
@@ -629,7 +581,6 @@ module.exports = {
       "",
       true
     );
-
     await sig.computeSignature(xml);
     var signedXml = sig.getSignedXml();
     var doc = new dom().parseFromString(signedXml);
@@ -639,19 +590,18 @@ module.exports = {
       "",
       "uri should be empty but instead was " + URI.value
     );
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "signer appends signature to a non-existing reference node": async function(
     test
   ) {
+    test.expect();
     var xml =
       "<root><name>xml-crypto</name><repository>github</repository></root>";
     var sig = new SignedXml();
-
     sig.signingKey = fs.readFileSync("./test/static/client.pem");
     sig.addReference("//*[local-name(.)='repository']");
-
     try {
       await sig.computeSignature(xml, {
         location: {
@@ -663,10 +613,11 @@ module.exports = {
     } catch (err) {
       test.ok(!(err instanceof TypeError));
     }
+    console.log("-------Test Complete----------\n\n");
     test.done();
   },
-
   "signer adds existing prefixes": async function(test) {
+    test.expect();
     function AssertionKeyInfo(assertionId) {
       this.getKeyInfo = function(key, prefix) {
         return (
@@ -679,7 +630,6 @@ module.exports = {
         ("</wsse:SecurityTokenReference>");
       };
     }
-
     var xml =
       '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"> ' +
       "<SOAP-ENV:Header> " +
@@ -690,7 +640,6 @@ module.exports = {
       "</wsse:Security> " +
       "</SOAP-ENV:Header> " +
       "</SOAP-ENV:Envelope>";
-
     var sig = new SignedXml();
     sig.keyInfoProvider = new AssertionKeyInfo(
       "_81d5fba5c807be9e9cf60c58566349b1"
@@ -712,6 +661,7 @@ module.exports = {
     result = sig.getSignedXml();
     test.equal((result.match(/xmlns:wsu=/g) || []).length, 1);
     test.equal((result.match(/xmlns:wsse=/g) || []).length, 1);
+    console.log("-------Test Complete----------\n\n");
     test.done();
   }
 };
@@ -794,7 +744,7 @@ function passLoadSignature(test, file, toString) {
 
 async function failInvalidSignature(test, file, mode) {
   var xml = fs.readFileSync(file).toString();
-  var res = await verifySignature(xml, mode);
+  var res = await verifySignature(xml, mode, true);
   test.equal(
     false,
     res,
@@ -802,7 +752,7 @@ async function failInvalidSignature(test, file, mode) {
   );
 }
 
-async function verifySignature(xml, mode) {
+async function verifySignature(xml, mode, silent = false) {
   var doc = new dom().parseFromString(xml);
   var node = select(
     "/*/*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']",
@@ -815,7 +765,10 @@ async function verifySignature(xml, mode) {
   );
   sig.loadSignature(node);
   var res = await sig.checkSignature(xml);
-  console.log(sig.validationErrors);
+  !silent &&
+    sig.validationErrors &&
+    sig.validationErrors.length > 0 &&
+    console.log(sig.validationErrors);
   return res;
 }
 
