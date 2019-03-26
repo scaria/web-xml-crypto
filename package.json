@@ -10,12 +10,7 @@
     "LoneRifle <LoneRifle@users.noreply.github.com>"
   ],
   "dependencies": {
-    "@trust/keyto": "^0.3.5",
-    "asmcrypto.js": "^0.22.0",
-    "asn1js": "^2.0.22",
-    "node-jose": "^1.1.3",
-    "pkijs": "^2.1.76",
-    "webcrypto-liner": "^1.0.1",
+    "node-forge": "^0.8.2",
     "xmldom": "0.1.27",
     "xpath": "0.0.27"
   },

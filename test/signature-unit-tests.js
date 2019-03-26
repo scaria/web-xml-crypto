@@ -763,6 +763,7 @@ async function verifySignature(xml, mode, silent = false) {
   sig.keyInfoProvider = new FileKeyInfo(
     fs.readFileSync("./test/static/client_public.pem")
   );
+
   sig.loadSignature(node);
   var res = await sig.checkSignature(xml);
   !silent &&

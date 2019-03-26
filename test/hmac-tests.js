@@ -17,6 +17,7 @@ exports["test validating HMAC signature"] = async function(test) {
   sig.loadSignature(signature);
   var result = await sig.checkSignature(xml);
   test.equal(result, true);
+  console.log("-------Test Complete----------\n\n");
   test.done();
 };
 
@@ -34,6 +35,7 @@ exports["test HMAC signature with incorrect key"] = async function(test) {
   sig.loadSignature(signature);
   var result = await sig.checkSignature(xml);
   test.equal(result, false);
+  console.log("-------Test Complete----------\n\n");
   test.done();
 };
 
@@ -62,6 +64,6 @@ exports["test create and validate HMAC signature"] = async function(test) {
   verify.loadSignature(signature);
   var result = await verify.checkSignature(sig.getSignedXml());
   test.equal(result, true);
-
+  console.log("-------Test Complete----------\n\n");
   test.done();
 };
