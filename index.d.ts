@@ -8,8 +8,8 @@ declare module "web-xml-crypto" {
     signatureAlgorithm: any;
     keyInfoProvider: FileKeyInfo;
     loadSignature: (node: any) => void;
-    checkSignature: (xml: string, log: any) => Promise<boolean>;
-    computeSignature: (xml: string) => Promise<string>
+    checkSignature: (xml: string, xmlDoc?: Document) => boolean;
+    computeSignature: (xml: string) => string;
     references: any[];
   }
 }
