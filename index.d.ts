@@ -23,15 +23,22 @@ declare module "web-xml-crypto" {
   export class SignedXml {
     signingKey: Buffer | Uint8Array;
     signatureAlgorithm: any;
-    keyInfoProvider: FileKeyInfo;
-    addReference(ref: string): void;
+    keyInfoProvider: FileKeyInfo | null;
+    addReference(
+      xpath?: string,
+      transforms?: any,
+      digestAlgorithm?: any,
+      uri?: any,
+      digestValue?: any,
+      inclusiveNamespacesPrefixList?: any,
+      isEmptyUri?: any
+    ): void;
     loadSignature: (node: any) => void;
     checkSignature: (xml: string, xmlDoc?: Document) => boolean;
     computeSignature: (
       xml: string,
       oprts?: { prefix?: string; location?: any; attrs?: any }
     ) => void;
-    getSignedXml(): string;
     validateSignatureValue(doc: Document): boolean;
     findSignatureAlgorithm(name: string): SignatureAlgorithm;
     findCanonicalizationAlgorithm(name: string): CanonizationAlgorithm;

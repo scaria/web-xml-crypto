@@ -1,6 +1,6 @@
 {
   "name": "web-xml-crypto",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Xml digital signature and encryption library for web js. Based on the https://github.com/yaronn/xml-crypto (Yaron Naveh <yaronn01@gmail.com> (http://webservices20.blogspot.com/))",
   "engines": {
     "node": ">=0.4.0"
