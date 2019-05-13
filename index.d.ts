@@ -54,6 +54,6 @@ declare module "web-xml-crypto" {
     createSignedInfo(doc: Document, prefix: string): string;
     ensureHasId(node: Node | Document): string;
     references: any[];
-    canonizeNode(mode?: string[], options: any): string;
+    canonize(mode?: string[], options: any): string;
   }
 }
