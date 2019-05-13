@@ -525,6 +525,31 @@ module.exports = {
     console.log("-------Test Complete----------\n\n");
     test.done();
   },
+  "verify valid signature on comment attack & canon should remove all comments": async function(
+    test
+  ) {
+    test.expect();
+
+    var xml = fs
+      .readFileSync("./test/static/valid_signature_comment_attack.xml")
+      .toString();
+    var [res, sig] = await verifySignature(xml);
+
+    const x = sig.canonize();
+    const attributes = select(
+      `//*[local-name(.)='Assertion']/*[local-name(.)='AttributeStatement']/*[local-name(.)='Attribute']`,
+      new dom().parseFromString(x)
+    );
+
+    test.equal(
+      attributes[0].childNodes[0].childNodes[0].nodeValue,
+      "сообщить@bar.com"
+    ); //Comment should be removed
+
+    test.equal(res, true);
+    console.log("-------Test Complete----------\n\n");
+    test.done();
+  },
   "fail invalid signature": async function(test) {
     test.expect();
     await failInvalidSignature(
@@ -668,7 +693,7 @@ module.exports = {
 
 async function passValidSignature(test, file, mode) {
   var xml = fs.readFileSync(file).toString();
-  var res = await verifySignature(xml, mode);
+  var [res] = await verifySignature(xml, mode);
   test.equal(
     true,
     res,
@@ -744,7 +769,7 @@ function passLoadSignature(test, file, toString) {
 
 async function failInvalidSignature(test, file, mode) {
   var xml = fs.readFileSync(file).toString();
-  var res = await verifySignature(xml, mode, true);
+  var [res] = await verifySignature(xml, mode, true);
   test.equal(
     false,
     res,
@@ -770,7 +795,7 @@ async function verifySignature(xml, mode, silent = false) {
     sig.validationErrors &&
     sig.validationErrors.length > 0 &&
     console.log(sig.validationErrors);
-  return res;
+  return [res, sig];
 }
 
 async function verifyDoesNotDuplicateIdAttributes(test, mode, prefix) {
