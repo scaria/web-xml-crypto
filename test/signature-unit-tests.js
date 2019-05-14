@@ -535,7 +535,7 @@ module.exports = {
       .toString();
     var [res, sig] = await verifySignature(xml);
 
-    const x = sig.canonize();
+    const x = sig.canonize(xml);
     const attributes = select(
       `//*[local-name(.)='Assertion']/*[local-name(.)='AttributeStatement']/*[local-name(.)='Attribute']`,
       new dom().parseFromString(x)
