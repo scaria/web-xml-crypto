@@ -21,7 +21,7 @@ declare module "web-xml-crypto" {
   };
 
   export class SignedXml {
-    signingKey: Buffer | Uint8Array;
+    signingKey: Buffer | Uint8Array | string;
     signatureAlgorithm: any;
     keyInfoProvider: FileKeyInfo | null;
     addReference(
